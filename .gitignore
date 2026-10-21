@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+
+
+data/stage_2_data/train.csv
