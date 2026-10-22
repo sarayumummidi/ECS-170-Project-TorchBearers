@@ -6,11 +6,12 @@ Concrete MethodModule class for a specific learning MethodModule
 # License: TBD
 
 from local_code.base_class.method import method
-from local_code.stage_1_code.Evaluate_Accuracy import Evaluate_Accuracy
+from local_code.stage_2_code.Evaluate_Accuracy import Evaluate_Accuracy
 import torch
 from torch import nn
 import numpy as np
-
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 class Method_MLP(method, nn.Module):
     data = None
@@ -29,6 +30,7 @@ class Method_MLP(method, nn.Module):
         self.fc_layer_1 = nn.Linear(784, 256)
         # check here for nn.ReLU doc: https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html
         self.activation_func_1 = nn.ReLU()
+        self.activation_func_2 = nn.ReLU()
         self.fc_layer_2 = nn.Linear(256, 128)
         # check here for nn.Softmax doc: https://pytorch.org/docs/stable/generated/torch.nn.Softmax.html
         self.fc_layer_3 = nn.Linear(128, 10)
@@ -62,6 +64,9 @@ class Method_MLP(method, nn.Module):
         # it will be an iterative gradient updating process
         # we don't do mini-batch, we use the whole input as one batch
         # you can try to split X and y into smaller-sized batches by yourself
+        loss_history = []
+        accuracy_history = []
+
         for epoch in range(self.max_epoch): # you can do an early stop if self.max_epoch is too much...
             # get the output, we need to covert X into torch.tensor so pytorch algorithm can operate on it
             y_pred = self.forward(torch.FloatTensor(np.array(X)))
@@ -79,22 +84,54 @@ class Method_MLP(method, nn.Module):
             # update the variables according to the optimizer and the gradients calculated by the above loss.backward function
             optimizer.step()
 
-            if epoch%100 == 0:
+            loss_history.append(train_loss.item())
+
+            accuracy = (y_pred.argmax(dim=1) == y_true).float().mean().item()
+            accuracy_history.append(accuracy)
+
+            if epoch%10 == 0:
                 accuracy_evaluator.data = {'true_y': y_true, 'pred_y': y_pred.max(1)[1]}
                 print('Epoch:', epoch, 'Accuracy:', accuracy_evaluator.evaluate(), 'Loss:', train_loss.item())
-    
+
+        plt.plot(loss_history)
+        plt.xlabel("Epoch")
+        plt.ylabel("Training Loss")
+        plt.title("MLP Learning Convergence")
+        plt.show()
+
+        plt.plot(accuracy_history)
+        plt.xlabel("Epoch")
+        plt.ylabel("Training Accuracy")
+        plt.title("MLP Training Accuracy")
+        plt.show()
+
     def test(self, X):
         # do the testing, and result the result
         y_pred = self.forward(torch.FloatTensor(np.array(X)))
         # convert the probability distributions to the corresponding labels
         # instances will get the labels corresponding to the largest probability
         return y_pred.max(1)[1]
-    
+
     def run(self):
         print('method running...')
+
         print('--start training...')
         self.train(self.data['train']['X'], self.data['train']['y'])
+
         print('--start testing...')
         pred_y = self.test(self.data['test']['X'])
-        return {'pred_y': pred_y, 'true_y': self.data['test']['y']}
-            
+
+        true_y = self.data['test']['y']
+
+        # Calculate evaluation metrics
+        accuracy = accuracy_score(true_y, pred_y)
+        precision = precision_score(true_y, pred_y, average='weighted', zero_division=0)
+        recall = recall_score(true_y, pred_y, average='weighted', zero_division=0)
+        f1 = f1_score(true_y, pred_y, average='weighted', zero_division=0)
+
+        print("Testing Accuracy:", accuracy)
+        print("Testing Precision:", precision)
+        print("Testing Recall:", recall)
+        print("Testing F1 Score:", f1)
+
+        return {'pred_y': pred_y, 'true_y': true_y}
