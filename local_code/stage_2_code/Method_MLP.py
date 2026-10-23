@@ -67,7 +67,8 @@ class Method_MLP(method, nn.Module):
     def train(self, X, y):
         # check here for the torch.optim doc: https://pytorch.org/docs/stable/optim.html
         # 2.4 run 5: changed optimizer from Adam to Adagrad with recommended learning rate of 0.01
-        optimizer = torch.optim.Adagrad(self.parameters(), lr=0.01)
+        # 2.4 run 6: changed optimizer from Adam to RMSprop
+        optimizer = torch.optim.RMSprop(self.parameters(), lr=self.learning_rate)
         # check here for the nn.CrossEntropyLoss doc: https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html
         loss_function = nn.CrossEntropyLoss()
         # for training accuracy investigation purpose
