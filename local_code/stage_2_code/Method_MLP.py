@@ -34,6 +34,7 @@ class Method_MLP(method, nn.Module):
         # check here for nn.ReLU doc: https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html
         self.activation_func_1 = nn.ReLU()
         self.activation_func_2 = nn.ReLU()
+        self.activation_func_3 = nn.ReLU()
         self.fc_layer_2 = nn.Linear(512, 256)
         # check here for nn.Softmax doc: https://pytorch.org/docs/stable/generated/torch.nn.Softmax.html
         self.fc_layer_3 = nn.Linear(256, 128)
@@ -51,11 +52,13 @@ class Method_MLP(method, nn.Module):
         # hidden layer embeddings
         h1 = self.dropout(self.activation_func_1(self.fc_layer_1(x)))
         h2 = self.dropout(self.activation_func_2(self.fc_layer_2(h1)))
+        # 2.4 run 4: add 3rd hidden layer
+        h3 = self.dropout(self.activation_func_3(self.fc_layer_3(h2)))
         # output layer result
         # self.fc_layer_2(h) will be a nx2 tensor
         # n (denotes the input instance number): 0th dimension; 2 (denotes the class number): 1st dimension
         # we do softmax along dim=1 to get the normalized classification probability distributions for each instance
-        y_pred = self.fc_layer_3(h2)
+        y_pred = self.fc_layer_4(h3)
         return y_pred
 
     # backward error propagation will be implemented by pytorch automatically
@@ -63,8 +66,7 @@ class Method_MLP(method, nn.Module):
 
     def train(self, X, y):
         # check here for the torch.optim doc: https://pytorch.org/docs/stable/optim.html
-        # 2.4 run 5: changed optimizer from Adam to Adagrad with recommended learning rate of 0.01
-        optimizer = torch.optim.Adagrad(self.parameters(), lr=0.01)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         # check here for the nn.CrossEntropyLoss doc: https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html
         loss_function = nn.CrossEntropyLoss()
         # for training accuracy investigation purpose
