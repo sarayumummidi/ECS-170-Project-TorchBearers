@@ -12,13 +12,13 @@ if __name__ == "__main__":
 
     # Load training data
     train_loader = Dataset_Loader("training data", "")
-    train_loader.dataset_source_folder_path = "/Users/kavirajesh/ECS-170-Project-TorchBearers/data/stage_2_data/"
+    train_loader.dataset_source_folder_path = "data/stage_2_data/"
     train_loader.dataset_source_file_name = "train.csv"
 
     # Load testing data
     test_loader = Dataset_Loader("testing data", "")
     #change the path and make sure you add train and test csv files to stage_2_data!
-    test_loader.dataset_source_folder_path = "/Users/kavirajesh/ECS-170-Project-TorchBearers/data/stage_2_data/"
+    test_loader.dataset_source_folder_path = "data/stage_2_data/"
     test_loader.dataset_source_file_name = "test.csv"
 
     train_data = train_loader.load()
