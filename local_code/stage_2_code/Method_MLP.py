@@ -27,16 +27,20 @@ class Method_MLP(method, nn.Module):
         method.__init__(self, mName, mDescription)
         nn.Module.__init__(self)
         # check here for nn.Linear doc: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
-        # 2.4: changed the architecture from 784 -> 256 -> 128 -> 10 to 784 -> 512 -> 256 -> 10
+        # 2.4
+        # run 3: changed the architecture from 784 -> 256 -> 128 -> 10 to 784 -> 512 -> 256 -> 10
+        # run 4: deepened network- 784 -> 512 -> 256 -> 128 -> 10 (added fourth layer)
         self.fc_layer_1 = nn.Linear(784, 512)
         # check here for nn.ReLU doc: https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html
         self.activation_func_1 = nn.ReLU()
         self.activation_func_2 = nn.ReLU()
         self.fc_layer_2 = nn.Linear(512, 256)
         # check here for nn.Softmax doc: https://pytorch.org/docs/stable/generated/torch.nn.Softmax.html
-        self.fc_layer_3 = nn.Linear(256, 10)
-        # 2.4: added dropout rate for regularization
-        # initial: 0.3, changed to 0.2
+        self.fc_layer_3 = nn.Linear(256, 128)
+        self.fc_layer_4 = nn.Linear(128, 10)
+        # 2.4
+        # run 1: added 0.3 dropout rate for regularization
+        # run 2: 0.3 changed to 0.2
         self.dropout = nn.Dropout(0.2)
 
     # it defines the forward propagation function for input x
