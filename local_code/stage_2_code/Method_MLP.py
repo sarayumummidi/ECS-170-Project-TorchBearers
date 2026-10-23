@@ -20,20 +20,24 @@ class Method_MLP(method, nn.Module):
     # it defines the learning rate for gradient descent based optimizer for model learning
     learning_rate = 1e-3
 
-    # it defines the the MLP model architecture, e.g.,
+    # it defines the MLP model architecture, e.g.,
     # how many layers, size of variables in each layer, activation function, etc.
     # the size of the input/output portal of the model architecture should be consistent with our data input and desired output
     def __init__(self, mName, mDescription):
         method.__init__(self, mName, mDescription)
         nn.Module.__init__(self)
         # check here for nn.Linear doc: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
-        self.fc_layer_1 = nn.Linear(784, 256)
+        # 2.4: changed the architecture from 784 -> 256 -> 128 -> 10 to 784 -> 512 -> 256 -> 10
+        self.fc_layer_1 = nn.Linear(784, 512)
         # check here for nn.ReLU doc: https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html
         self.activation_func_1 = nn.ReLU()
         self.activation_func_2 = nn.ReLU()
-        self.fc_layer_2 = nn.Linear(256, 128)
+        self.fc_layer_2 = nn.Linear(512, 256)
         # check here for nn.Softmax doc: https://pytorch.org/docs/stable/generated/torch.nn.Softmax.html
-        self.fc_layer_3 = nn.Linear(128, 10)
+        self.fc_layer_3 = nn.Linear(256, 10)
+        # 2.4: added dropout rate for regularization
+        # initial: 0.3, changed to 0.2
+        self.dropout = nn.Dropout(0.2)
 
     # it defines the forward propagation function for input x
     # this function will calculate the output layer by layer
@@ -41,9 +45,9 @@ class Method_MLP(method, nn.Module):
     def forward(self, x):
         '''Forward propagation'''
         # hidden layer embeddings
-        h1 = self.activation_func_1(self.fc_layer_1(x))
-        h2 = self.activation_func_2(self.fc_layer_2(h1))
-        # outout layer result
+        h1 = self.dropout(self.activation_func_1(self.fc_layer_1(x)))
+        h2 = self.dropout(self.activation_func_2(self.fc_layer_2(h1)))
+        # output layer result
         # self.fc_layer_2(h) will be a nx2 tensor
         # n (denotes the input instance number): 0th dimension; 2 (denotes the class number): 1st dimension
         # we do softmax along dim=1 to get the normalized classification probability distributions for each instance
@@ -107,6 +111,7 @@ class Method_MLP(method, nn.Module):
 
     def test(self, X):
         # do the testing, and result the result
+        self.dropout.eval()
         y_pred = self.forward(torch.FloatTensor(np.array(X)))
         # convert the probability distributions to the corresponding labels
         # instances will get the labels corresponding to the largest probability
