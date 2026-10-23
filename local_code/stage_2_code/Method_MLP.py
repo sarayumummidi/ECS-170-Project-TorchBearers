@@ -68,9 +68,10 @@ class Method_MLP(method, nn.Module):
         # check here for the torch.optim doc: https://pytorch.org/docs/stable/optim.html
         # 2.4 run 5: changed optimizer from Adam to Adagrad with recommended learning rate of 0.01
         # 2.4 run 6: changed optimizer from Adam to RMSprop
-        optimizer = torch.optim.RMSprop(self.parameters(), lr=self.learning_rate)
+        # 2.4 run 7: changed back to Adam
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         # check here for the nn.CrossEntropyLoss doc: https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html
-        loss_function = nn.CrossEntropyLoss()
+        loss_function = nn.MSELoss()
         # for training accuracy investigation purpose
         accuracy_evaluator = Evaluate_Accuracy('training evaluator', '')
 
@@ -85,8 +86,10 @@ class Method_MLP(method, nn.Module):
             y_pred = self.forward(torch.FloatTensor(np.array(X)))
             # convert y to torch.tensor as well
             y_true = torch.LongTensor(np.array(y))
+            # 2.4 run 7: do one-hot encoding on y for loss function MSE
+            y_encoded = nn.functional.one_hot(y_true, num_classes=10).float()
             # calculate the training loss
-            train_loss = loss_function(y_pred, y_true)
+            train_loss = loss_function(torch.softmax(y_pred, dim=1), y_encoded)
 
             # check here for the gradient init doc: https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.zero_grad.html
             optimizer.zero_grad()
