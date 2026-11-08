@@ -12,6 +12,7 @@ wheels/
 
 
 data/stage_2_data/train.csv
+data/stage_3_data
 /local_code/stage_3_code/CIFAR
 /local_code/stage_3_code/MNIST
 /local_code/stage_3_code/ORL
