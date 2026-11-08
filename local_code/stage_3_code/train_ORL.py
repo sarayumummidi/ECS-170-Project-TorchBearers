@@ -251,6 +251,18 @@ plt.title("ORL Training and Testing Loss")
 plt.legend()
 plt.grid(True)
 
+# accuracy curve
+plt.subplot(1, 2, 2)
+
+plt.plot(range(1, epochs + 1), train_accuracies, label="Training Accuracy")
+plt.plot(range(1, epochs + 1), test_accuracies, label="Testing Accuracy")
+
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+plt.title("ORL Training and Testing Accuracy")
+plt.legend()
+plt.grid(True)
+
 plt.savefig(
     result_path / "ORL_Learning_Curve.png"
 )
