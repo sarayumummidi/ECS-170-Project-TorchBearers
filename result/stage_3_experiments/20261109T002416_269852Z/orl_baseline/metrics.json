@@ -1,0 +1,15 @@
+{
+  "train": {
+    "loss": 0.0003159475558075226,
+    "accuracy": 1.0
+  },
+  "test": {
+    "loss": 0.05858503803610802,
+    "accuracy": 0.975,
+    "macro_precision": 0.9625,
+    "macro_recall": 0.975,
+    "macro_f1": 0.9666666666666666
+  },
+  "duration_seconds": 116.4801730409963,
+  "epoch": 50
+}

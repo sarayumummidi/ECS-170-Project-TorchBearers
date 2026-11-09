@@ -17,3 +17,7 @@ data/stage_3_data
 /local_code/stage_3_code/MNIST
 /local_code/stage_3_code/ORL
 .idea/
+
+# Local experiment artifacts
+/result/stage_3_experiments/**/*.pth
+/result/stage_3_experiments/*/*.py

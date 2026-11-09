@@ -1,0 +1,96 @@
+{
+  "epochs": 10,
+  "batch_size": 64,
+  "hidden_dim": 256,
+  "weight_decay": 0.0,
+  "num_classes": 10,
+  "input_shape": [
+    3,
+    32,
+    32
+  ],
+  "dataset": "cifar",
+  "experiment": "hidden_dim",
+  "seed": 42,
+  "learning_rate": 0.001,
+  "optimizer": "Adam",
+  "loss": "CrossEntropyLoss",
+  "pooling": "max",
+  "dropout": 0.3,
+  "conv_channels": [
+    32,
+    64,
+    128
+  ],
+  "kernel_size": 3,
+  "padding": 1,
+  "conv_stride": 1,
+  "pool_size": 2,
+  "batch_normalization": true,
+  "augmentation": null,
+  "preprocessing": "float32 / 255; HWC to CHW; ORL: first channel, labels minus 1",
+  "checkpoint": "final epoch (no best-test selection)",
+  "metric_scale": "accuracy, precision, recall, F1 in [0, 1]; summary accuracy in percent",
+  "epoch_override": false,
+  "device": "mps",
+  "deterministic_algorithms": true,
+  "parameter_count": 620810,
+  "data": {
+    "sha256": "04178bcd1198435941ecf94037f09d87f5f9a51ee65bf72b6a497bbfe1c825d4",
+    "train": {
+      "samples": 50000,
+      "input_shape": [
+        3,
+        32,
+        32
+      ],
+      "label_counts": [
+        5000,
+        5000,
+        5000,
+        5000,
+        5000,
+        5000,
+        5000,
+        5000,
+        5000,
+        5000
+      ]
+    },
+    "test": {
+      "samples": 10000,
+      "input_shape": [
+        3,
+        32,
+        32
+      ],
+      "label_counts": [
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000,
+        1000
+      ]
+    },
+    "filename": "CIFAR"
+  },
+  "provenance": {
+    "commit": "164225c5518401448648486527c5ff360c4423de",
+    "branch": "stage3-5-orl-cifar",
+    "source_sha256": {
+      "local_code/stage_3_code/run_experiments.py": "dc43c843646d389fe53e286013ef5212a2f4813aed1a891bc2805ee6a00f13ec",
+      "local_code/stage_3_code/dataset_loader.py": "e9cd000bec24e9321b2533ca8ac4c9fb609c607486bf200c675ca3d4939848ea",
+      "local_code/stage_3_code/cnn_models.py": "54332bac5211ca28cc33e9f141d3a6ce955d6f4f701aee8a5835884706404850",
+      "local_code/stage_3_code/Method_CNN_ORL.py": "a3956f737ae80805210e971287f83f0190b15e7c05a91e6ce76f705be582e82e",
+      "local_code/stage_3_code/Method_CNN_CIFAR.py": "bb1fd5c1bed2a06e10c99ed6cce53775899bd64212eb3172bffd6ff0354bf31f"
+    },
+    "torch_version": "2.5.1",
+    "numpy_version": "1.26.4",
+    "source_modified": true
+  }
+}
