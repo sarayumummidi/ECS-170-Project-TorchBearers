@@ -2,6 +2,7 @@
 
 import os
 from local_code.base_class.dataset import dataset
+from pathlib import Path
 
 
 class Dataset_Loader(dataset):
@@ -9,10 +10,12 @@ class Dataset_Loader(dataset):
     def __init__(self, dName=None, dDescription=None):
         super().__init__(dName, dDescription)
 
-        self.dataset_source_folder_path = (
-            "local_code/stage_4_data/text_classification"
+        self.dataset_source_folder_path = str(
+            Path(__file__).resolve().parents[2]
+            / "data"
+            / "stage_4_data"
+            / "text_classification"
         )
-
     def load(self):
 
         print("Loading text classification data...")
