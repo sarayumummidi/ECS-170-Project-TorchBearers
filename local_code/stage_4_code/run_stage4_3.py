@@ -1,12 +1,11 @@
-
 from local_code.stage_4_code.dataset_loader import Dataset_Loader
-from local_code.stage_4_code.Method_RNN import Method_RNN
+from local_code.stage_4_code.Method_RNN_Classification import Method_RNN
 
 from sklearn.metrics import accuracy_score, classification_report
 
 
 # Step 1: Load the dataset
-loader = Dataset_Loader()
+loader = Dataset_Loader(task="classification")
 data = loader.load()
 
 trainData = data["trainData"]
