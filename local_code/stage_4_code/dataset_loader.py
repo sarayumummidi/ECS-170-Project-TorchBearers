@@ -1,5 +1,4 @@
-
-
+import csv
 import os
 from local_code.base_class.dataset import dataset
 from pathlib import Path
@@ -7,16 +6,27 @@ from pathlib import Path
 
 class Dataset_Loader(dataset):
 
-    def __init__(self, dName=None, dDescription=None):
+    def __init__(self, dName=None, dDescription=None, task=None):
         super().__init__(dName, dDescription)
+
+        if task is None or task not in ["generation", "classification"]:
+            raise ValueError("Task must be 'classification' or 'generation'")
+
+        self.task = task
 
         self.dataset_source_folder_path = str(
             Path(__file__).resolve().parents[2]
             / "data"
             / "stage_4_data"
-            / "text_classification"
+            / ("text_" + task)
         )
+
     def load(self):
+        if self.task =="classification":
+            return self.load_classification()
+        return self.load_generation()
+
+    def load_classification(self):
 
         print("Loading text classification data...")
 
@@ -82,4 +92,29 @@ class Dataset_Loader(dataset):
             "trainLabel": trainLabel,
             "testData": testData,
             "testLabel": testLabel
+        }
+
+    def load_generation(self):
+        print("Loading text generation data...")
+
+        file = os.path.join(self.dataset_source_folder_path, "data")
+
+        if not os.path.isfile(file):
+            raise FileNotFoundError(
+                "Dataset file not found: "
+                + file
+            )
+
+        trainData = []
+
+        with open(file, "r", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                joke = row["Joke"].strip()
+                if joke:
+                    trainData.append(joke)
+
+        print("Training samples/Number of Jokes:", len(trainData))
+
+        return {
+            "trainData": trainData,
         }
