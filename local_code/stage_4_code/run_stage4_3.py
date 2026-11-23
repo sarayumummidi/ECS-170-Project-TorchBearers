@@ -2,10 +2,10 @@
 from local_code.stage_4_code.dataset_loader import Dataset_Loader
 from local_code.stage_4_code.Method_RNN import Method_RNN
 
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score
 
 
-# Step 1: Load the dataset
+# Step 1: Load the text classification dataset
 loader = Dataset_Loader()
 data = loader.load()
 
@@ -17,28 +17,23 @@ testLabel = data["testLabel"]
 
 
 # Step 2: Initialize RNN model
+# GloVe embeddings are loaded inside Method_RNN.run()
 rnn = Method_RNN()
 
 
-# Step 3: Train RNN and classify test data
+# Step 3: Train RNN with GloVe and classify test data
 predictions = rnn.run(
     trainData,
     trainLabel,
-    testData
+    testData,
+    testLabel
 )
 
 
-# Step 4: Calculate testing accuracy
+# Step 4: Calculate final testing accuracy
 accuracy = accuracy_score(testLabel, predictions)
 
 print("\n===== STAGE 4.3 RESULTS =====")
-print(f"Test Accuracy: {accuracy * 100:.2f}%")
+print(f"Final Test Accuracy: {accuracy * 100:.2f}%")
 
-print("\nClassification Report:")
-print(classification_report(
-    testLabel,
-    predictions,
-    target_names=["Negative", "Positive"],
-    digits=4,
-    zero_division=0
-))
+print("RNN with GloVe training and evaluation completed!")
