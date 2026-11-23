@@ -75,40 +75,53 @@ def load_glove_embeddings(glove_path, vocab, embedding_dim=100):
 
     found = 0
 
-    # Read GloVe directly from ZIP
+    # Read GloVe vectors directly from ZIP, without extracting the full file.
     with zipfile.ZipFile(glove_path, "r") as archive:
-
-        txt_files = [
+        vector_files = [
             name for name in archive.namelist()
-            if name.endswith(".txt")
+            if name.lower().endswith((".txt", ".vec"))
+            and not name.startswith("__MACOSX/")
         ]
 
-        if not txt_files:
-            raise ValueError("No GloVe .txt file found in ZIP")
+        if not vector_files:
+            raise ValueError(
+                "glove_dataset.zip has no .txt or .vec word-vector file. "
+                "Make sure this is a GloVe embeddings ZIP, not the movie review dataset."
+            )
 
-        with archive.open(txt_files[0]) as file:
+        # Prefer a file for the requested embedding dimension if present.
+        vector_files.sort(key=lambda name: (
+            f"{embedding_dim}d" not in name.lower(),
+            -archive.getinfo(name).file_size
+        ))
+        vector_file = vector_files[0]
+        print(f"Reading vectors from ZIP member: {vector_file}", flush=True)
 
+        wrong_dimension_count = 0
+        with archive.open(vector_file) as file:
             for raw_line in file:
-
-                line = raw_line.decode("utf-8").strip()
-
+                line = raw_line.decode("utf-8", errors="replace").strip()
                 word, separator, values = line.partition(" ")
-
                 if not separator or word not in vocab:
                     continue
 
-                vector = np.fromstring(
-                    values,
-                    sep=" ",
-                    dtype=np.float32
-                )
+                vector = np.fromstring(values, sep=" ", dtype=np.float32)
+                if vector.size != embedding_dim:
+                    wrong_dimension_count += 1
+                    continue
 
-                if len(vector) == embedding_dim:
-                    embedding_matrix[vocab[word]] = vector
-                    found += 1
+                embedding_matrix[vocab[word]] = vector
+                found += 1
+
+    if found == 0:
+        raise ValueError(
+            f"No {embedding_dim}-dimensional vectors matched your vocabulary "
+            f"(wrong-dimension matches: {wrong_dimension_count}). "
+            "Check that glove_dataset.zip contains pretrained GloVe "
+            f"{embedding_dim}d vectors."
+        )
 
     print(f"GloVe words matched: {found}/{len(vocab)}")
-
     return torch.tensor(embedding_matrix)
 
 
@@ -292,7 +305,38 @@ class Method_RNN(method):
             num_classes=2
         ).to(self.device)
 
-        print("GloVe embeddings initialized successfully!")
+        # Locate glove_dataset.zip. The first location is recommended.
+        project_root = Path(__file__).resolve().parents[2]
+        possible_glove_paths = [
+            project_root / "data" / "stage_4_data" / "glove_dataset.zip",
+            project_root / "data" / "glove_dataset.zip",
+            Path(__file__).resolve().parent / "glove_dataset.zip",
+            project_root / "glove_dataset.zip",
+        ]
+        glove_path = next(
+            (path for path in possible_glove_paths if path.is_file()),
+            None
+        )
+        if glove_path is None:
+            raise FileNotFoundError(
+                "Could not find glove_dataset.zip. Put it in "
+                f"{possible_glove_paths[0]} or update possible_glove_paths."
+            )
+
+        print(f"Loading pretrained GloVe from: {glove_path}", flush=True)
+        glove_weights = load_glove_embeddings(
+            glove_path,
+            self.vocab,
+            embedding_dim=100
+        )
+
+        # Initialize the existing embedding layer with pretrained vectors.
+        # Embeddings remain trainable (the default for nn.Embedding).
+        with torch.no_grad():
+            self.model.embedding.weight.copy_(
+                glove_weights.to(self.device)
+            )
+        print("GloVe embeddings initialized successfully!", flush=True)
 
         criterion = nn.CrossEntropyLoss()
 
