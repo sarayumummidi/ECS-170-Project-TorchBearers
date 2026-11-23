@@ -1,0 +1,79 @@
+STAGE 4.5 - TEXT CLASSIFICATION WITH GRU + GloVe
+=================================================
+
+Run date:   2026-11-22 (22:53 - 23:34, total 40 min 20 s)
+Device:     Apple M3 Pro GPU (MPS)
+Code:       local_code/stage_4_code/Method_RNN_Classification.py (branch jul4.5, commit ef0c95d1)
+            with nn.RNN replaced by nn.GRU (line 189); all other settings unchanged
+Run with:   uv run python -m local_code.stage_4_code.run_stage4_3
+
+DATA
+----
+Training reviews:    25,000 (12,500 positive / 12,500 negative)
+  -> split 80/20 (stratified): 20,000 train / 5,000 validation
+Testing reviews:     25,000 (12,500 positive / 12,500 negative)
+Vocabulary size:     30,000 (built from training split only, incl. <PAD>, <UNK>)
+GloVe words matched: 29,797 / 30,000
+Max review length:   300 tokens
+
+MODEL & SETTINGS
+----------------
+Embedding:       100-d, initialized from pretrained GloVe 100d (fine-tuned);
+                 unmatched words ~ N(0, 0.1), <PAD> = zero vector
+Recurrent layer: 1 bidirectional GRU layer, 128 hidden units per direction
+Output:          concat final forward/backward hidden states (256-d)
+                 -> Dropout(0.5) -> Linear(256 -> 2)
+Loss:            Cross-entropy
+Optimizer:       Adam, learning rate 0.001
+Batch size:      64
+Epochs:          10
+Random seed:     42 (Python, NumPy, PyTorch)
+
+TRAINING PROGRESS
+-----------------
+Epoch | Train Loss | Train Acc | Val Loss | Val Acc
+------+------------+-----------+----------+--------
+  1   |   0.4747   |  75.88%   |  0.3262  | 86.36%
+  2   |   0.2382   |  90.76%   |  0.2698  | 88.88%
+  3   |   0.1471   |  94.79%   |  0.2869  | 88.94%   <- best validation accuracy
+  4   |   0.0701   |  97.72%   |  0.4047  | 87.78%
+  5   |   0.0305   |  99.11%   |  0.4923  | 87.98%
+  6   |   0.0130   |  99.65%   |  0.5556  | 87.38%
+  7   |   0.0057   |  99.90%   |  0.6394  | 88.58%
+  8   |   0.0046   |  99.90%   |  0.6827  | 87.92%
+  9   |   0.0011   |  99.99%   |  0.7219  | 88.46%
+ 10   |   0.0002   | 100.00%   |  0.8062  | 88.38%
+
+Note: validation loss is lowest at epoch 2 and rises afterward while training
+accuracy reaches 100%, indicating overfitting after epochs 2-3.
+
+FINAL VALIDATION EVALUATION (5,000 reviews, after epoch 10)
+-----------------------------------------------------------
+              precision    recall  f1-score   support
+
+    Negative     0.8821    0.8860    0.8841      2500
+    Positive     0.8855    0.8816    0.8835      2500
+
+    accuracy                         0.8838      5000
+   macro avg     0.8838    0.8838    0.8838      5000
+weighted avg     0.8838    0.8838    0.8838      5000
+
+TEST EVALUATION (25,000 reviews)
+--------------------------------
+Test Accuracy: 86.22%
+
+              precision    recall  f1-score   support
+
+    Negative     0.8470    0.8842    0.8652     12500
+    Positive     0.8789    0.8402    0.8591     12500
+
+    accuracy                         0.8622     25000
+   macro avg     0.8629    0.8622    0.8622     25000
+weighted avg     0.8629    0.8622    0.8622     25000
+
+FILES IN THIS FOLDER
+--------------------
+classification_report.txt   this summary
+gru_glove_loss.png          training vs. validation loss per epoch
+gru_glove_accuracy.png      training vs. validation accuracy per epoch
+full_training_log.txt       complete console output of the run

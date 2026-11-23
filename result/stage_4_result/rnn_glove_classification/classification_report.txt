@@ -1,0 +1,82 @@
+STAGE 4.3 - TEXT CLASSIFICATION WITH VANILLA RNN + GloVe
+=========================================================
+
+Run date:   2026-11-22 (22:20 - 22:38, total 17 min 42 s)
+Device:     Apple M3 Pro GPU (MPS)
+Code:       local_code/stage_4_code/Method_RNN_Classification.py (branch jul4.5, commit ef0c95d1)
+            with the device line changed to use MPS; model code unchanged
+Run with:   uv run python -m local_code.stage_4_code.run_stage4_3
+
+DATA
+----
+Training reviews:    25,000 (12,500 positive / 12,500 negative)
+  -> split 80/20 (stratified): 20,000 train / 5,000 validation
+Testing reviews:     25,000 (12,500 positive / 12,500 negative)
+Vocabulary size:     30,000 (built from training split only, incl. <PAD>, <UNK>)
+GloVe words matched: 29,797 / 30,000
+Max review length:   300 tokens
+
+MODEL & SETTINGS
+----------------
+Embedding:       100-d, initialized from pretrained GloVe 100d (fine-tuned);
+                 unmatched words ~ N(0, 0.1), <PAD> = zero vector
+Recurrent layer: 1 bidirectional vanilla RNN layer (tanh), 128 hidden units per direction
+Output:          concat final forward/backward hidden states (256-d)
+                 -> Dropout(0.5) -> Linear(256 -> 2)
+Loss:            Cross-entropy
+Optimizer:       Adam, learning rate 0.001
+Batch size:      64
+Epochs:          10
+Gradient clip:   none
+Random seed:     42 (Python, NumPy, PyTorch)
+
+TRAINING PROGRESS
+-----------------
+Epoch | Train Loss | Train Acc | Val Loss | Val Acc
+------+------------+-----------+----------+--------
+  1   |   0.6434   |  62.80%   |  0.5671  | 71.86%
+  2   |   0.5907   |  68.29%   |  0.6458  | 63.60%
+  3   |   0.5667   |  70.07%   |  0.6442  | 60.84%
+  4   |   0.5508   |  72.15%   |  0.5556  | 73.54%   <- best validation accuracy
+  5   |   0.5028   |  75.45%   |  0.6542  | 61.70%
+  6   |   0.5993   |  67.16%   |  0.6479  | 61.12%
+  7   |   0.6078   |  65.80%   |  0.5905  | 69.36%
+  8   |   0.5694   |  70.11%   |  0.6378  | 63.16%
+  9   |   0.5308   |  73.41%   |  0.6160  | 65.30%
+ 10   |   0.4924   |  76.14%   |  0.5628  | 72.24%
+
+Note: validation accuracy fluctuates between ~61% and ~74%, and training accuracy
+drops at epochs 6-7 (75.45% -> 65.80%), indicating unstable training. This is
+consistent with vanishing/exploding gradients in a vanilla RNN on long sequences
+(up to 300 tokens) with no gradient clipping.
+
+FINAL VALIDATION EVALUATION (5,000 reviews, after epoch 10)
+-----------------------------------------------------------
+              precision    recall  f1-score   support
+
+    Negative     0.7380    0.6896    0.7130      2500
+    Positive     0.7087    0.7552    0.7312      2500
+
+    accuracy                         0.7224      5000
+   macro avg     0.7234    0.7224    0.7221      5000
+weighted avg     0.7234    0.7224    0.7221      5000
+
+TEST EVALUATION (25,000 reviews)
+--------------------------------
+Test Accuracy: 73.06%
+
+              precision    recall  f1-score   support
+
+    Negative     0.7463    0.6986    0.7217     12500
+    Positive     0.7167    0.7626    0.7389     12500
+
+    accuracy                         0.7306     25000
+   macro avg     0.7315    0.7306    0.7303     25000
+weighted avg     0.7315    0.7306    0.7303     25000
+
+FILES IN THIS FOLDER
+--------------------
+classification_report.txt   this summary
+rnn_glove_loss.png          training vs. validation loss per epoch
+rnn_glove_accuracy.png      training vs. validation accuracy per epoch
+full_training_log.txt       complete console output of the run

@@ -1,0 +1,60 @@
+[22:53:42] Loading text classification data...
+[22:53:48] Training samples: 25000
+[22:53:48] Testing samples: 25000
+[22:53:48] Starting RNN text classification...
+[22:53:48] Device: mps
+[22:53:49] Vocabulary size: 30000
+[22:53:50] Loading pretrained GloVe from: <repo>/data/stage_4_data/glove_dataset.zip
+[22:53:50] Reading vectors from ZIP member: wiki_giga_2024_100_MFT20_vectors_seed_2024_alpha_0.75_eta_0.05.050_combined.txt
+[22:53:55] GloVe words matched: 29797/30000
+[22:53:56] GloVe embeddings initialized successfully!
+[22:57:57] Validation Loss: 0.3262, Validation Accuracy: 0.8636
+[22:57:57] Epoch [1/10] Loss: 0.4747 Accuracy: 0.7588
+[23:01:51] Validation Loss: 0.2698, Validation Accuracy: 0.8888
+[23:01:51] Epoch [2/10] Loss: 0.2382 Accuracy: 0.9076
+[23:05:50] Validation Loss: 0.2869, Validation Accuracy: 0.8894
+[23:05:50] Epoch [3/10] Loss: 0.1471 Accuracy: 0.9479
+[23:09:45] Validation Loss: 0.4047, Validation Accuracy: 0.8778
+[23:09:45] Epoch [4/10] Loss: 0.0701 Accuracy: 0.9772
+[23:13:40] Validation Loss: 0.4923, Validation Accuracy: 0.8798
+[23:13:40] Epoch [5/10] Loss: 0.0305 Accuracy: 0.9911
+[23:17:35] Validation Loss: 0.5556, Validation Accuracy: 0.8738
+[23:17:35] Epoch [6/10] Loss: 0.0130 Accuracy: 0.9965
+[23:21:28] Validation Loss: 0.6394, Validation Accuracy: 0.8858
+[23:21:28] Epoch [7/10] Loss: 0.0057 Accuracy: 0.9990
+[23:25:18] Validation Loss: 0.6827, Validation Accuracy: 0.8792
+[23:25:18] Epoch [8/10] Loss: 0.0046 Accuracy: 0.9990
+[23:28:59] Validation Loss: 0.7219, Validation Accuracy: 0.8846
+[23:28:59] Epoch [9/10] Loss: 0.0011 Accuracy: 0.9999
+[23:32:41] Validation Loss: 0.8062, Validation Accuracy: 0.8838
+[23:32:41] Epoch [10/10] Loss: 0.0002 Accuracy: 1.0000
+[23:32:42] Learning curves saved!
+[23:32:42] 
+[23:32:42] Final Validation Evaluation:
+[23:32:42]               precision    recall  f1-score   support
+[23:32:42] 
+[23:32:42]            0     0.8821    0.8860    0.8841      2500
+[23:32:42]            1     0.8855    0.8816    0.8835      2500
+[23:32:42] 
+[23:32:42]     accuracy                         0.8838      5000
+[23:32:42]    macro avg     0.8838    0.8838    0.8838      5000
+[23:32:42] weighted avg     0.8838    0.8838    0.8838      5000
+[23:32:42] 
+[23:33:58] Prediction completed.
+[23:33:58] Test labels unavailable.
+[23:33:58] Use validation metrics for evaluation.
+[23:33:58] 
+[23:33:58] ===== STAGE 4.3 RESULTS =====
+[23:33:58] Test Accuracy: 86.22%
+[23:33:58] 
+[23:33:58] Classification Report:
+[23:33:58]               precision    recall  f1-score   support
+[23:33:58] 
+[23:33:58]     Negative     0.8470    0.8842    0.8652     12500
+[23:33:58]     Positive     0.8789    0.8402    0.8591     12500
+[23:33:58] 
+[23:33:58]     accuracy                         0.8622     25000
+[23:33:58]    macro avg     0.8629    0.8622    0.8622     25000
+[23:33:58] weighted avg     0.8629    0.8622    0.8622     25000
+[23:33:58] 
+[23:34:00]  -m local_code.stage_4_code.run_stage4_3  2226.14s user 419.86s system 109% cpu 40:20.33 total
